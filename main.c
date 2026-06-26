@@ -20,6 +20,9 @@ int main()
     // printing the pixels
     for(int i=0; i<image_height; i++) // rows
     {
+        printf("\rRows remaining: %d  ",image_height-(i+1)); // progress bar to track the number of rows remaining in render
+        // carriage return \r is used to rewrite on the same line in the terminal
+        fflush(stdout);
         for(int j=0; j<image_width; j++) // columns
         {
             double r = (double)j / (image_width-1); // intensity of red increases left to right
@@ -35,6 +38,7 @@ int main()
             fprintf(fp,"%d %d %d\n",ir,ig,ib);
         }
     }
+    printf("\nRender completed\n");
     fclose(fp);
     return 0;
 }
