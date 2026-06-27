@@ -6,10 +6,14 @@ typedef struct vec3
     double e[3];
 }vec3;
 
-/* a point and a vector both store 3 elements but they represent different things
-   so we can use the same structure but just typedef it with a different name  */
+/*
+    a point and a vector both store 3 elements but they represent different things
+    and a colour represents r,g,b values so we can use the same structure but just 
+    typedef it with a different name
+*/
 
 typedef vec3 point3;
+typedef vec3 colour;
 
 vec3 vec3_zero();
 vec3 vec3_create(double e0, double e1, double e2);
