@@ -30,7 +30,7 @@ int main()
         {
             double r = (double)j / (image_width-1); // intensity of red increases left to right
             double g = (double)i / (image_height-1); // intensity of green increases top to bottom
-            double b = 10.0;
+            double b = 1.0;
 
             /*
             // scaling the decimal values to integral values between 0 to 255
