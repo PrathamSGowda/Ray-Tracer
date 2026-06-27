@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+#include "vec3.h"
+#include "colour.h"
+
 int main()
 {
     int image_width = 256;
@@ -27,8 +30,9 @@ int main()
         {
             double r = (double)j / (image_width-1); // intensity of red increases left to right
             double g = (double)i / (image_height-1); // intensity of green increases top to bottom
-            double b = 0.0;
+            double b = 10.0;
 
+            /*
             // scaling the decimal values to integral values between 0 to 255
             int ir = (int)(255*r);
             int ig = (int)(255*g);
@@ -36,6 +40,10 @@ int main()
 
             // printing R G B values for the respective pixel
             fprintf(fp,"%d %d %d\n",ir,ig,ib);
+            */
+
+            colour pixel_colour = {{r,g,b}};
+            write_colour(fp,pixel_colour);
         }
     }
     printf("\nRender completed\n");
