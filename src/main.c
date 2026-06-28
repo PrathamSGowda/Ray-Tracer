@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <math.h>
 
+#include "rtweekend.h"
 #include "vec3.h"
 #include "colour.h"
 #include "ray.h"
