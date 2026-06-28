@@ -6,8 +6,14 @@
 
 colour ray_colour(ray r) // returns the color for a given scene ray
 {
-    colour c = {{0,0,0}};
-    return c;
+    // colour c = {{0,0,0}}; // black image
+
+    // vertical gradient
+    vec3 unit_direction = vec3_unit(r.dir);
+    double a = 0.5 * (unit_direction.e[1] + 1.0);
+    colour white = {{1.0,1.0,1.0}};
+    colour blue = {{0.1,0.7,0.8}};
+    return vec3_add(vec3_scale(white, 1.0-a), vec3_scale(blue, a));
 }
 
 int main()
@@ -56,7 +62,7 @@ int main()
     */
     point3 pixel00_loc = vec3_add(viewport_upper_left,vec3_scale(vec3_add(pixel_delta_u,pixel_delta_v),0.5));
 
-    FILE *fp = fopen("image1.ppm","w");
+    FILE *fp = fopen("image2.ppm","w");
 
     if(fp==NULL)
     {
@@ -94,7 +100,7 @@ int main()
             */
 
             // calculating center of current pixel
-            point3 pixel_center = vec3_add(vec3_add(pixel00_loc,vec3_scale(pixel_delta_u,i)),vec3_scale(pixel_delta_v,j));
+            point3 pixel_center = vec3_add(vec3_add(pixel00_loc,vec3_scale(pixel_delta_u,j)),vec3_scale(pixel_delta_v,i));
 
             vec3 ray_direction = vec3_sub(pixel_center,camera_center); // vector pointing to pixel from camera
             ray r = ray_create(camera_center,ray_direction);
