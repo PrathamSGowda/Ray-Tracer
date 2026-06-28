@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 #include "vec3.h"
 #include "colour.h"
@@ -14,7 +15,19 @@ double hit_sphere(point3 center, double radius, ray r)
 
     double discriminant = b*b - 4*a*c;
 
-    return (discriminant >= 0);
+    // return (discriminant >= 0); // condition implies point lies on or inside sphere
+
+    if(discriminant < 0)
+    {
+        return -1.0;
+    }
+    else
+    {
+        return (-b - sqrt(discriminant)) / (2.0 * a);
+        // we return the smaller root because it is the
+        // first intersection or else we will be taking
+        // point which is on the back and cant be seen
+    }
 
 }
 
@@ -22,12 +35,24 @@ colour ray_colour(ray r) // returns the color for a given scene ray
 {
     // colour c = {{0,0,0}}; // black image
 
+    /*
     // sphere
     if(hit_sphere(vec3_create(0,0,-1),0.5,r))
     {
         colour pink = {{1.0,0.75,0.79}};
         return pink;
     }
+    */
+
+    // colour map for normal vectors of sphere
+    double t = hit_sphere(vec3_create(0,0,-1),0.5,r);
+    if(t > 0.0)
+    {
+        vec3 N = vec3_unit(vec3_sub(ray_at(r,t), vec3_create(0,0,-1))); // normal vector to POI from sphere center
+        colour map = {{N.e[0] + 1, N.e[1] + 1, N.e[2] + 1}};
+        return vec3_scale(map, 0.5);
+    }
+
     // vertical gradient
     vec3 unit_direction = vec3_unit(r.dir);
     double a = 0.5 * (unit_direction.e[1] + 1.0);
@@ -82,7 +107,7 @@ int main()
     */
     point3 pixel00_loc = vec3_add(viewport_upper_left,vec3_scale(vec3_add(pixel_delta_u,pixel_delta_v),0.5));
 
-    FILE *fp = fopen("image3.ppm","w");
+    FILE *fp = fopen("image4.ppm","w");
 
     if(fp==NULL)
     {
