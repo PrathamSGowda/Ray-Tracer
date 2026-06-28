@@ -2,13 +2,61 @@
 
 #include "vec3.h"
 #include "colour.h"
+#include "ray.h"
+
+colour ray_colour(ray r) // returns the color for a given scene ray
+{
+    colour c = {{0,0,0}};
+    return c;
+}
 
 int main()
 {
+    /*
     int image_width = 256;
     int image_height = 256;
+    */
 
-    FILE *fp = fopen("image.ppm","w");
+    // Image properties
+    double aspect_ratio = 16.0 / 9.0;
+    int image_width = 400;
+    int image_height = (int)(image_width / aspect_ratio); // aspect ratio = width/height
+
+    // making sure that the image height is atleast 1
+    image_height = (image_height < 1) ? 1 : image_height;
+
+    // Camera properties
+    double focal_length = 1.0;
+    double viewport_height = 2.0;
+    double viewport_width = viewport_height * ((double)image_width / image_height);
+    point3 camera_center = vec3_zero(); // center is at (0,0,0)
+
+    // Viewport vectors
+    vec3 viewport_u = vec3_create(viewport_width,0,0); // vector measuring width of viewport (left to right)
+    vec3 viewport_v = vec3_create(0,-viewport_height,0); // vector measuring height of viewport (top to bottom)
+
+    // distance between adjacent pixels
+    vec3 pixel_delta_u = vec3_div(viewport_u, image_width);
+    vec3 pixel_delta_v = vec3_div(viewport_v, image_height);
+
+    /* 
+        upper left corner of the viewport (Q):
+        To find this we move a distance of focal length in -z direction
+        then move in -x direction a distance of u/2 to reach left edge
+        then move in +y direction a distance of v/2 to reach point Q.
+    */
+    point3 viewport_upper_left = vec3_sub(vec3_sub(vec3_sub(camera_center,vec3_create(0,0,focal_length)),
+                                 vec3_div(viewport_u,2)),vec3_div(viewport_v,2));
+
+    /*
+        location of center of pixel P(0,0):
+        To find this we first find the diagonal vector by adding u and v
+        then we find half of this diagonal vector by scalling it to 0.5
+        and to this we add Q vector,
+    */
+    point3 pixel00_loc = vec3_add(viewport_upper_left,vec3_scale(vec3_add(pixel_delta_u,pixel_delta_v),0.5));
+
+    FILE *fp = fopen("image1.ppm","w");
 
     if(fp==NULL)
     {
@@ -20,7 +68,7 @@ int main()
     fprintf(fp,"%d %d\n",image_width,image_height); // max columns and max rows
     fprintf(fp,"255\n"); // max colour value [0,255]
 
-    // printing the pixels
+    // render
     for(int i=0; i<image_height; i++) // rows
     {
         printf("\rRows remaining: %d  ",image_height-(i+1)); // progress bar to track the number of rows remaining in render
@@ -28,21 +76,30 @@ int main()
         fflush(stdout);
         for(int j=0; j<image_width; j++) // columns
         {
+            /* GRADIENT IMAGE CODE:
             double r = (double)j / (image_width-1); // intensity of red increases left to right
             double g = (double)i / (image_height-1); // intensity of green increases top to bottom
             double b = 1.0;
 
-            /*
-            // scaling the decimal values to integral values between 0 to 255
-            int ir = (int)(255*r);
-            int ig = (int)(255*g);
-            int ib = (int)(255*b);
+            // // scaling the decimal values to integral values between 0 to 255
+            // int ir = (int)(255*r);
+            // int ig = (int)(255*g);
+            // int ib = (int)(255*b);
 
-            // printing R G B values for the respective pixel
-            fprintf(fp,"%d %d %d\n",ir,ig,ib);
-            */
+            // // printing R G B values for the respective pixel
+            // fprintf(fp,"%d %d %d\n",ir,ig,ib);
 
             colour pixel_colour = {{r,g,b}};
+            write_colour(fp,pixel_colour);
+            */
+
+            // calculating center of current pixel
+            point3 pixel_center = vec3_add(vec3_add(pixel00_loc,vec3_scale(pixel_delta_u,i)),vec3_scale(pixel_delta_v,j));
+
+            vec3 ray_direction = vec3_sub(pixel_center,camera_center); // vector pointing to pixel from camera
+            ray r = ray_create(camera_center,ray_direction);
+
+            colour pixel_colour = ray_colour(r);
             write_colour(fp,pixel_colour);
         }
     }
