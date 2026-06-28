@@ -4,7 +4,9 @@
 #include "vec3.h"
 #include "colour.h"
 #include "ray.h"
+#include "sphere.h"
 
+/*
 double hit_sphere(point3 center, double radius, ray r)
 {
     vec3 oc = vec3_sub(center,r.origin); // vector to sphere center from ray origin
@@ -35,19 +37,21 @@ double hit_sphere(point3 center, double radius, ray r)
     }
 
 }
+*/
 
+/*
 colour ray_colour(ray r) // returns the color for a given scene ray
 {
     // colour c = {{0,0,0}}; // black image
 
-    /*
-    // sphere
-    if(hit_sphere(vec3_create(0,0,-1),0.5,r))
-    {
-        colour pink = {{1.0,0.75,0.79}};
-        return pink;
-    }
-    */
+    
+    // // sphere
+    // if(hit_sphere(vec3_create(0,0,-1),0.5,r))
+    // {
+    //     colour pink = {{1.0,0.75,0.79}};
+    //     return pink;
+    // }
+    
 
     // colour map for normal vectors of sphere
     double t = hit_sphere(vec3_create(0,0,-1),0.5,r);
@@ -64,6 +68,27 @@ colour ray_colour(ray r) // returns the color for a given scene ray
     colour white = {{1.0,1.0,1.0}};
     colour blue = {{0.1,0.7,0.8}};
     return vec3_add(vec3_scale(white, 1.0-a), vec3_scale(blue, a));
+}
+*/
+
+colour ray_colour(ray r)
+{
+    sphere s = {.center = vec3_create(0, 0, -1), .radius = 0.5};
+    hit_record rec;
+
+    if (sphere_hit(&s, r, 0.001, INFINITY, &rec))
+    {
+        return vec3_scale(vec3_add(rec.normal, vec3_create(1, 1, 1)), 0.5);
+    }
+
+    vec3 unit_direction = vec3_unit(r.dir);
+
+    double a = 0.5 * (unit_direction.e[1] + 1.0);
+
+    colour white = {{1.0, 1.0, 1.0}};
+    colour blue  = {{0.5, 0.7, 1.0}};
+
+    return vec3_add(vec3_scale(white, 1.0 - a), vec3_scale(blue, a));
 }
 
 int main()
