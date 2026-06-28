@@ -14,6 +14,16 @@ typedef struct
     bool front_face;
 }hit_record;
 
+struct hittable;
+
+typedef bool (*hit_function)(const struct hittable *self, ray r, double t_min,
+                            double t_max, hit_record *rec);
+
+typedef struct hittable
+{
+    hit_function hit;
+}hittable;
+
 // making sure the normal is always against the incoming ray
 void set_face_normal(hit_record *rec, ray r, vec3 outward_normal);
 

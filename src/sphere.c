@@ -2,8 +2,22 @@
 
 #include "sphere.h"
 
-bool sphere_hit(sphere *s, ray r, double t_min, double t_max, hit_record *rec)
+sphere sphere_create(point3 center, double radius)
 {
+    sphere s;
+
+    s.base.hit = sphere_hit;
+
+    s.center = center;
+    s.radius = radius;
+
+    return s;
+}
+
+bool sphere_hit(const struct hittable *self, ray r, double t_min, double t_max, hit_record *rec)
+{
+    const sphere *s=(const sphere *)self;
+
     vec3 oc = vec3_sub(s->center, r.origin);
 
     double a = vec3_length_squared(r.dir);

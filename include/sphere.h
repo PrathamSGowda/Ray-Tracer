@@ -9,10 +9,13 @@
 
 typedef struct
 {
+    hittable base;
     point3 center;
     double radius;
 }sphere;
 
-bool sphere_hit(sphere *s, ray r, double t_min, double t_max, hit_record *rec);
+sphere sphere_create(point3 center, double radius);
+
+bool sphere_hit(const struct hittable *self, ray r, double t_min, double t_max, hit_record *rec);
 
 #endif

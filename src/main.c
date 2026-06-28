@@ -5,6 +5,7 @@
 #include "colour.h"
 #include "ray.h"
 #include "sphere.h"
+#include "hittable_list.h"
 
 /*
 double hit_sphere(point3 center, double radius, ray r)
@@ -71,14 +72,13 @@ colour ray_colour(ray r) // returns the color for a given scene ray
 }
 */
 
-colour ray_colour(ray r)
+colour ray_colour(ray r, const hittable_list *world)
 {
-    sphere s = {.center = vec3_create(0, 0, -1), .radius = 0.5};
     hit_record rec;
 
-    if (sphere_hit(&s, r, 0.001, INFINITY, &rec))
+    if(hittable_list_hit(world, r, 0.001, INFINITY, &rec))
     {
-        return vec3_scale(vec3_add(rec.normal, vec3_create(1, 1, 1)), 0.5);
+        return vec3_scale(vec3_add(rec.normal, vec3_create(1.0, 1.0, 1.0)), 0.5);
     }
 
     vec3 unit_direction = vec3_unit(r.dir);
@@ -137,7 +137,17 @@ int main()
     */
     point3 pixel00_loc = vec3_add(viewport_upper_left,vec3_scale(vec3_add(pixel_delta_u,pixel_delta_v),0.5));
 
-    FILE *fp = fopen("image4.ppm","w");
+    // world
+    hittable_list world;
+    hittable_list_init(&world);
+
+    sphere sphere1 = sphere_create(vec3_create(0.0, 0, -1.0), 0.5);
+    sphere ground = sphere_create(vec3_create(0.0, -100.5, -1.0), 100.0);
+
+    hittable_list_add(&world, (hittable *)&sphere1);
+    hittable_list_add(&world, (hittable *)&ground);
+
+    FILE *fp = fopen("image5.ppm","w");
 
     if(fp==NULL)
     {
@@ -180,11 +190,12 @@ int main()
             vec3 ray_direction = vec3_sub(pixel_center,camera_center); // vector pointing to pixel from camera
             ray r = ray_create(camera_center,ray_direction);
 
-            colour pixel_colour = ray_colour(r);
+            colour pixel_colour = ray_colour(r, &world);
             write_colour(fp,pixel_colour);
         }
     }
     printf("\nRender completed\n");
+    hittable_list_clear(&world);
     fclose(fp);
     return 0;
 }
