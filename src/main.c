@@ -9,11 +9,15 @@ double hit_sphere(point3 center, double radius, ray r)
 {
     vec3 oc = vec3_sub(center,r.origin); // vector to sphere center from ray origin
     
-    double a = vec3_dot(r.dir,r.dir); // coefficient of t^2
-    double b = -2.0 * vec3_dot(r.dir,oc); // coefficient of t
-    double c = vec3_dot(oc,oc) - radius*radius; // constant term
+    // double a = vec3_dot(r.dir,r.dir); // coefficient of t^2
+    double a = vec3_length_squared(r.dir);
+    // double b = -2.0 * vec3_dot(r.dir,oc); // coefficient of t
+    double h = vec3_dot(r.dir,oc);
+    // double c = vec3_dot(oc,oc) - radius*radius; // constant term
+    double c = vec3_length_squared(oc) - radius*radius;
 
-    double discriminant = b*b - 4*a*c;
+    // double discriminant = b*b - 4*a*c;
+    double discriminant = h*h - a*c;
 
     // return (discriminant >= 0); // condition implies point lies on or inside sphere
 
@@ -23,7 +27,8 @@ double hit_sphere(point3 center, double radius, ray r)
     }
     else
     {
-        return (-b - sqrt(discriminant)) / (2.0 * a);
+        // return (-b - sqrt(discriminant)) / (2.0 * a);
+        return (h - sqrt(discriminant)) / a;
         // we return the smaller root because it is the
         // first intersection or else we will be taking
         // point which is on the back and cant be seen
