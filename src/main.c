@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "camera.h"
 #include "sphere.h"
@@ -6,6 +8,8 @@
 
 int main(void)
 {
+    srand((unsigned)time(NULL)); // to keep the seed changing and random number to be truly random
+
     // create the world
     hittable_list world;
     hittable_list_init(&world);
@@ -16,7 +20,7 @@ int main(void)
     hittable_list_add(&world, (hittable *)&sphere1);
     hittable_list_add(&world, (hittable *)&ground);
 
-    FILE *fp = fopen("image4.ppm", "w");
+    FILE *fp = fopen("image6.ppm", "w");
 
     if(fp == NULL)
     {

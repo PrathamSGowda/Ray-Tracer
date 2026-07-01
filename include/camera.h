@@ -12,6 +12,7 @@ typedef struct camera
     double aspect_ratio;
     int image_width;
     int image_height;
+    int samples_per_pixel;
 
     // camera properties
     double focal_length;
